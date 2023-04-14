@@ -1,0 +1,160 @@
+---
+title: "TCAD Report"
+author: "Kelly Chu"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This project, started by a faculty colleague in urban studies, has a data dump from Travis Central Appraisal District (TCAD) on Austin property valuations in 1990 that were exported around 2004. Where TCAD is the governmental entity responsible for appraising and assessing the value of all real and personal property in Travis County. Overall, the total size of these files is under 600MB uncompressed. The colleague would like to analyze these databases for his research, so the goal for this project is to gather the information and present the deliverable that would help in the research in the form that the faculty colleague can access in a format that preferably in an Excel sheet for all data. This project is a prototypical combo of archives, databases/data engineering, and some knowledge of geographic information system work.
+
+From the given annotated microfiche, it labeled all the tasks with an example of the following information: Parcel, lot size, use, sq ft, effect date built, deed date, land appraised value, improvement appraised value, owner name, mailing address, location, and Legal description. The outcome to faculty colleagues will present a table in an Excel sheet that specifically extracts the data of these columns.
+
+![Image 1: Annotated microfiche parcel](Microfiche_images/Parcel%20Number.png)
+
+![Image 2: Annotated microfiche lot size, use code, and sq ft](Microfiche_images/Lot%20size.png)
+
+![Image 3: Annotated microfiche effect date built](Microfiche_images/EYOC.png)
+
+![Image 4: Annotated microfiche deed date](Microfiche_images/Deed%20date.png)
+
+![Image 5: Annotated microfiche land appraised value and improvement appraised value](Microfiche_images/Appr_value%20and%20Impr_value.png)
+
+![Image 6: Annotated microfiche owner's name and mailing address](Microfiche_images/name%20and%20mailing.png)
+
+![Image 7: Annotated microfiche location](Microfiche_images/Location.png)
+
+![Image 8: Annotated microfiche legal description](Microfiche_images/Legal%20description.png)
+
+## Data
+
+There are a total of two sets of folders that gave, the folder is named Appraisal_Roll_History_1990_A and Appraisal_Roll_History_B. Interestingly, these two folders contain the same files, and all files it has the same information. This can be shown by running a Python code that compares between the folders:
+
+```{r}
+
+```
+
+```{python}
+import os
+folder_A = 'data/Appraisal_Roll_History_1990_A'
+folder_B = 'data/Appraisal_Roll_History_1990_B'
+
+for filename in os.listdir(folder_A):
+    file_A = os.path.join(folder_A, filename)
+    file_B = os.path.join(folder_B, filename)
+
+    with open(file_A, "r") as a, open(file_B, "r") as b:
+        data_A = a.read()
+        data_B = b.read()
+
+    if data_A == data_B:
+        print(f"{filename}: Files are identical.")
+    else:
+        print(f"{filename}: Files are different.")
+
+```
+
+Within the folders, it contains 3 types of files:
+
+-   IDX files: CREATE INDEX statements
+
+-   TDF files: CREATE TABLE statements
+
+-   Text files (TXT): data/ records
+
+There are 2 general types of files, one is TCBC and the other is TXBC. From many searches, I assumed that TCBC is the abbreviation for Travis County Basic Code, and TXBC is the Travis County Extra-territory Basic Code. Where in these two general files there are some with suffixes following:
+
+-   *CFOR (CFOR code)*
+
+-   *GRANT_EXMP (grant exemption)*
+
+-   *JURIS (jurisdiction)*: Each jurisdiction has its tax rate, which is used to calculate the property taxes owed on a particular property within that jurisdiction. The JURIS code is used by the appraisal district to identify the specific jurisdiction for each property within its jurisdictional area.
+
+-   *JURIS_EXMP (jurisdiction exemption)*
+
+-   *LEGAL (legal description)*: Typically used to identify and define the property for legal and taxation purposes, and it may include information such as the property's lot number, block number, subdivision name, survey name, and other identifying details. It's used to accurately identify and assess the value of a property for taxation purposes.
+
+-   *SUSP (suspended)*: When a property's value or other information is in the dispute or has not been fully determined. The SUSP code is used by the appraisal district to indicate that the assessment of a particular property is currently suspended or on hold for some reason.
+
+-   *SUSP_INIT (suspended initial*): The SUSP_INIT code is used by the appraisal district to indicate that the initial assessment of a particular property has been suspended.
+
+However, by looking at the file description, noticing that the data only provided are `TCBC_SUM_1990`, `TCBC_SUM_1990_JURIS`, `TCBC_SUM_1990_LEGAL`, `TXBC_SUM_1990`, `TXBC_SUM_1990_JURIS`, `TXBC_SUM_1990_JURIS_EXMP`, `TXBC_SUM_1990_LEGAL`.
+
+Other than the datasets provided by TCAD, I also created the data for the use code where the source is from page 59 of the Reappraisal Plan for Tax Years 2015-2016 by the Texas Comptroller of Public Account (Image 9). I have followed the formatting of .TXT and . TDF files the same way that was given, it is named `TXBC_SUM_1990_USECODE`. So, it allows me to upload the file into a folder where all files were unzipped and load the data all together in both folders A and B.
+
+## Method and Tools
+
+To accomplish the tasks in this project, we have used Google Sheets to save our findings and list out the notes that can be shared within the teams. To unzip and read the files given, we used Python from JupyterHub under the EduPod server and imported the extension called DuckDB for running the SQL code in the Jupyter Notebook.
+
+The relationship between the data can be presented with the Entity Relation Diagram (ER Diagram) using dbDocs.
+
+\[image here for ER diagram\]
+
+## Findings
+
+The deliverable from the annotated microfiche are mostly found in the TXBC (Travis County Extra-territory Basic Code) files. However, the client is not looking for extra-territory records. This makes some confusion about whether or not the TXBC represents the Travis County Extra-territory Basic Code. If not, what is the difference between TXBC and TCBC?
+
+##### Parcel Number with OwnerId
+
+Looking at the parcel number on the microfiche (Image 1), the sample is having the format of XX-XXXX-XXXX-XXXX. And from the data in TXBC_SUM_1990, the `Parcel` column is presented as a 10-digit number, and `OwnrId` is a 4-digits number. It can be figured out that the parcel number from the microfiche is split up into 'Parcel' and 'OwnrId' columns of TXBC, where the first 10-digits are 'Parcel' and the last 4-digits is 'OwnrId'. Therefore, the unique key for the TXBC files is the combination of 'Parcel' and 'OwnrId'.
+
+##### Lot size
+
+Unfortunately, we have not yet discovered the accurate data for the lot size. The sample lot size from microfiche (Image 2) is 62.5000X101.5000.
+
+##### Square feet
+
+Throughout all data, we only found one column that contains "sqft" in the column labels. Therefore, we assume `TotSqft` from the TXBC_SUM_1990 file is the reasonable data for sq ft in the microfiche. The reason we have to assume the `TotSqft` as the matching information in the microfiche is that the outcomes are widely spread from 4 to 2614058 other than 0. Although there is also `TotSqft` in the `TCBC_SUM_1990` file, the only outcome is '0', which is not useful at all.
+
+##### Use code
+
+The use code is a 2-digit number code in the `TXBC_SUM_1990` file, it should be matching with other information, but the description of this code was not provided in the datasets given. Luckily, I was able to find a document published for the Reappraisal Plan for Tax Years 2015-2016 by the Texas Comptroller of Public Account. Page 59 of this document (Image 9), recorded the Use Codes with its description that was organized by the type of use, we are taking this information and forming it into tables so we can connect between tables. However, the data contains a pretty decent amount of records '00' and 'None' that couldn't be identified. With the information that was created for the additional text file (`TXBC_SUM_1990_USECODE`), it could load the use code description and its category into the table and match the code from `TXBC_SUM_1990`.
+
+[![Image 9: Use Codes from Reappraisal Plan for Tax Years 2015-2016, Page 59](Microfiche_images/Use%20code%20image.png)](https://comptroller.texas.gov/taxes/property-tax/reappraisals/)
+
+##### EYOC (effective year of construction or year built)
+
+The same document by the Texas Comptroller of Public Account describes EYOC, which is the "year built and the effective year of construction" (TCAD 2014), and this information is in the TXBC_SUM_1990 file. This matches with one of our deliverables of effect date built on the microfiche. However, I believe that there's some error with the data that was given to us from the TCAD and that there is a possible outcome with the years 2971 and 0984. And in the data of EYOC, there are also both None and 0000 and they are probably presenting the same meaning that they do not have the data for some records.
+
+##### Deed information (volume, page, and date)
+
+Any deed information can only be found in the TXBC_SUM_1990 file. The deed volume and page number only have one outcome throughout, for both are all presented with "00000". And the deed date only has one record of "1900-00-00". The reason resulting in this information is possibly due to different systems of collection of appraisal in 1900 and exportation in 2004.
+
+##### Land appraised value and improvement appraised value
+
+Part of the important deliverable is the land appraised value and the improvement appraised value, and this information can only be found in the TXBC_SUM_1990_JURIS file. Some interesting information is the value of `LandMktVal` seems to match with `LandApprdVal`, and `ImprMktVal` matches with the `ImprApprdVal`. And the total appraised value (`TotApprdVal`) is the sum of the land appraised value and improvement appraised value, which can be found in the TXBC_SUM_1990_JURIS file.
+
+##### Owner name
+
+The owner name (`OwnerName`) is the basic information that can be found in both TCBC_SUM_1990 and TXBC_SUM_1990. The records are different between these two files, but since the rest of the deliverables are from the TXBC files, it is more efficient to look at the TXBC_SUM_1990 for the records, unless working with the TCBC dataset.
+
+##### Mailing address
+
+The mailing address has split into a maximum of 5 cells from the TXBC_SUM_1990 file. By viewing the `MailCnt` before reading the mailing address (`MailAddr1`, `MailAddr2`, `MailAddr3`, `MailAddr4`, and `MailAddr5`) it can tell the information of how many cells the mailing address is split into.
+
+##### Location
+
+Location can also be found in both TCBC_SUM_1990 and TXBC_SUM_1990 datasets. With consistent reasoning, it is more efficient to continue using the TXBC file. There is a column of data that records the entire location, and six other columns are the split record of this appraisal history. If looking at the overall location information for the research, it can use the column called `FmtLoc`, and if would like to organize and get information about the location individually, then it is more efficient to just read separately for `LocStreet`, `LocHouse`, `LocFrac`, `LocAlpha`, `LocUnit`, and`LocZip`.
+
+##### Legal description
+
+Legal descriptions are stored in both TXBC and TCBC files that have the suffix LEGAL (`TXBC_SUM_1990_LEGAL` and `TCBC_SUM_1990_LEGAL`). Since the unique keys that are used are the `Parcel` and `OwnrId`, therefore we are using the TXBC information instead of TCBC. The pattern of the legal description has not yet been discovered with `LegalSub1`, `LegalSub2`, `LegalCd1`, `LegalLn1`, `LegalCd2`, `LegalLn2`, `LegalCd3`, `LegalLn3`, `LegalCd4`, `LegalLn4`, `LegalCd5`, `LegalLn5`, `LegalCd6`, and `LegalLn6`.
+
+## Challenges and discussions
+
+At the start of this project, we faced some difficulties in understanding the content of the data given. I took lots of time just browsing on the internet to look for the description of abbreviations that includes in the data, just like TCBC and TXBC means Travis County Basic Code and Travis County Extra-territory Basic Code, this definition is the most reasonable from my searches, but it still has the possibility that is representing something else. Another challenge that we haven't discovered is the data for lot size, this is one the important information for the client's research. To find the solution, we probably need to look into the TCAD website to find if there's any other data matching, this may need to dive in by individual records.
+
+Some further discussion can be:
+
+-   What data would fit in with the lot size?
+
+-   Is there information on the file that started with RPT that we needed? It seems like the actual record summaries.
+
+-   The actual definition of TCBC is Travis County Basic Code? And TXBC is Travis County Extra-territory Basic Code?
+
+-   The name of the files all included 'SUM', does that mean summary?
+
+## Reference (MLA)
+
+"Reappraisal Plans for Tax Years 2015 & 2016." Comptroller.texas.gov, TRAVIS CENTRAL APPRAISAL DISTRICT, 19 Aug. 2014, comptroller.texas.gov/taxes/property-tax/reappraisals/. Accessed 14 Apr. 2023.

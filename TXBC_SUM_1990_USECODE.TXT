@@ -1,0 +1,87 @@
+01|1 Family Dwelling|Residential
+02|Duplex|Residential
+03|Tri‐Plex|Residential
+04|Four‐Plex|Residential
+11|MOHO (Mobile Home) Single PP|Residential
+12|MOHO Double PP|Residential
+13|MOHO Sungle RP|Residential
+14|MOHO Double RP|Residential
+15|Condo (Stacked)|Residential
+16|Townhomes/Condos|Residential
+17|Clubhouse|Residential
+18|1/2 Duplex|Residential
+20|Small Store <10K SF|Residential
+21|Garage Apartment|Residential
+05|Apartments 5‐25 Units|Apartments
+06|Apartments 26‐49 Units|Apartments
+07|Apartments 5‐100 Units|Apartments
+08|Apartments 100+ Units|Apartments
+23|Small Office Condo|Apartments
+25|Medical Condo|Apartments
+26|LG Office Condo|Apartments
+49|Bed/Breakfast|Apartments
+72|Frat/Sorority|Apartments
+73|Dormitory|Apartments
+74|Dorm High‐Rise|Apartments
+75|Rest/Nursing Home|Apartments
+76|Retirement Center|Apartments
+77|Hospital|Apartments
+88|Treatment/Rehab|Apartments
+89|Alternate Living Center|Apartments
+10|MF Commercial BLDG|Office/Hotel/Motel
+27|Major Ind Office|Office/Hotel/Motel
+28|Major Ind Eng|Office/Hotel/Motel
+29|Major Ind MFG|Office/Hotel/Motel
+34|Hotel‐Full Service|Office/Hotel/Motel
+35|Hotel‐Limited Service|Office/Hotel/Motel
+36|Motel‐Full Service|Office/Hotel/Motel
+37|Motel‐Extended Stay|Office/Hotel/Motel
+50|Office High Rise >=6|Office/Hotel/Motel
+51|Office ‐ Large >35K SF|Office/Hotel/Motel
+52|Office ‐ Medium 10‐35K SF|Office/Hotel/Motel
+53|Office ‐ Small|Office/Hotel/Motel
+54|Medical Office < 15K SF|Office/Hotel/Motel
+55|Medical Office > 15K SF|Office/Hotel/Motel
+56|Bank‐Office|Office/Hotel/Motel
+57|Bank Drive Thru|Office/Hotel/Motel
+58|Bank Branch Office|Office/Hotel/Motel
+59|Office/Retail|Office/Hotel/Motel
+87|Parking Garage|Office/Hotel/Motel
+91|Mortuary/Funeral Home|Office/Hotel/Motel
+20|Small Store < 10K SF|Retail
+30|Strip Center < 10K SF|Retail
+31|Night Club/Bar|Retail
+32|Restaurant|Retail
+33|Fast Food Restaurant|Retail
+39|Restaurant (SFR)|Retail
+40|Regional Shopping Center|Retail
+41|Comm Shopping Center|Retail
+42|Neighbor Shopping Center|Retail
+43|Strip Center > 10K SF|Retail
+44|Grocery Store|Retail
+45|Department Store > 25K SF|Retail
+46|Discount Store > 25K SF|Retail
+47|Med Store10‐25K SF|Retail
+48|Convenience Store|Retail
+82|Self‐Service Booth|Retail
+90|Theater|Retail
+93|Bowling Center|Retail
+94|Health Club|Retail
+95|Marina|Retail
+60|Bulk Warehouse > 20K SF|Industrial
+61|Warehouse < 20K SF|Industrial
+63|Mini‐Warehouse|Industrial
+64|Office/Warehouse 5‐24%|Industrial
+65|Office/Showroom 25‐74%|Industrial
+66|Flex/R&D/Service Center|Industrial
+68|Transit Warehouse|Industrial
+69|Manufacturing/Engg/Lab|Industrial
+78|Day Care Center|Industrial
+79||Industrial
+80|Vehicle Dealer Showroom|Industrial
+81|Service Station|Industrial
+83|Service/Repair Garage|Industrial
+84|Mini‐Lube/Tune Up|Industrial
+86|Auto Car Wash|Industrial
+||
+00||
